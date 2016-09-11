@@ -43,7 +43,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         this.midiPlayer = new MidiPlayer(1, 60);
 
-
         Menu mainMenu = new Menu("File");
         MenuItem menuItem = new MenuItem("Exit");
         mainMenu.getItems().add(menuItem);
@@ -94,7 +93,12 @@ public class Main extends Application {
         primaryStage.setTitle("Scale Player");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
 
+    @Override
+    public void stop() {
+        System.out.println("Closing Application");
+        System.exit(0);
     }
 
     public static void main(String[] args) {
