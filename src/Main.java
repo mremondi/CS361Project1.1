@@ -8,6 +8,7 @@
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -32,7 +33,7 @@ public class Main extends Application {
     private int BEATS_PER_MINUTE = 100;
     private int WINDOW_WIDTH = 300;
     private int WINDOW_HEIGHT = 250;
-    private Menu mainMenu;
+    private MenuBar mainMenu;
 
     /**
      * Creates a dialog box and returns the input string provided by the user.
@@ -66,6 +67,18 @@ public class Main extends Application {
     }
 
     /**
+     * Creates a menu item for use in the main menuBar
+     *
+     * @param itemName String value to be displayed in the file
+     * @param event the EventHandler to be used when the item is clicked
+     */
+    public MenuItem createMenuItem(String itemName, EventHandler<ActionEvent> event) {
+        MenuItem menuItem = new MenuItem(itemName);
+        menuItem.setOnAction(event);
+        return menuItem;
+    }
+
+    /**
      * Plays midi starting from the given value.
      *
      * @param startNote int value for starting note
@@ -95,15 +108,15 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.midiPlayer = new MidiPlayer(1, BEATS_PER_MINUTE);
+        this.mainMenu = new MenuBar();
 
-        this.mainMenu = new Menu("File");
-        MenuItem menuItem = new MenuItem("Exit");
-        this.mainMenu.getItems().add(menuItem);
-        menuItem.setOnAction( event -> { System.exit(0); });
+        //Create Menu for MenuBar
+        Menu fileMenu = new Menu("File");
+        fileMenu.getItems().add(createMenuItem("Exit",  event -> { System.exit(0); }));
 
-        MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().add(mainMenu);
+        this.mainMenu.getMenus().add(fileMenu);
 
+        //Create Buttons
         Button playButton = createButton("Play Scale", "-fx-base: #008000");
         playButton.addEventHandler(ActionEvent.ACTION, event -> {
             int startNote = Integer.valueOf(createDialogBox("Starting Note", "Give Me A Starting Note", "60"));
@@ -115,12 +128,13 @@ public class Main extends Application {
             stopMidi();
         });
 
+        //Setup Desired Display
         HBox hbox = new HBox(8);
         hbox.getChildren().addAll(playButton, stopButton);
         hbox.setAlignment(Pos.CENTER);
 
         BorderPane masterPane = new BorderPane();
-        masterPane.setTop(menuBar);
+        masterPane.setTop(this.mainMenu);
         masterPane.setCenter(hbox);
         Scene scene = new Scene(masterPane, WINDOW_WIDTH, WINDOW_HEIGHT);
 
